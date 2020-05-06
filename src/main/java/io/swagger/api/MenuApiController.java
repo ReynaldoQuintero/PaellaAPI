@@ -71,6 +71,7 @@ public class MenuApiController implements MenuApi {
     public ResponseEntity<List<Food>> menuFoodGet(@ApiParam(value = "The name of the food to return.") @Valid @RequestParam(value = "name", required = false) String name
 ,@ApiParam(value = "The description of the food to return.") @Valid @RequestParam(value = "description", required = false) String description
 ,@ApiParam(value = "The ID of the category of the food to return.") @Valid @RequestParam(value = "categoryId", required = false) Integer categoryId
+,@ApiParam(value = "The access token given to the authenticated user.", required = false) @Valid @RequestParam(value = "access_token", required = false) String accessToken
 ) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
@@ -116,7 +117,7 @@ public class MenuApiController implements MenuApi {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    
+    @Transactional
     public ResponseEntity<Void> menuFoodIdDelete(@ApiParam(value = "The ID of the food to delete.",required=true) @PathVariable("id") Integer id
 ,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
 ) {
@@ -140,9 +141,10 @@ public class MenuApiController implements MenuApi {
             return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
         }
         
+        this.ingredientFoodRepo.deleteByFoodId(id);
+        
         this.foodRepo.delete(id);
         
-        this.ingredientFoodRepo.deleteByFoodId(id);
         
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
@@ -232,6 +234,8 @@ public class MenuApiController implements MenuApi {
 ,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
 ) {
         
+        System.out.println(body.getFood());
+        
         Authentication authentication = SecurityContextHolder.getContext()
         .getAuthentication();
         boolean flag = false;
@@ -261,6 +265,7 @@ public class MenuApiController implements MenuApi {
             Food created = this.foodRepo.save(body.getFood());
             
             for (int i = 0; i <  body.getIngredientFoods().size(); i++) {
+                body.getIngredientFoods().get(i).setFoodId(created.getFoodId());
                 this.ingredientFoodRepo.save(body.getIngredientFoods().get(i));
             }
             

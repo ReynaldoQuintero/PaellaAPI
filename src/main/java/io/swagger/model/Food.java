@@ -73,16 +73,17 @@ public class Food   {
 
   /**
    * The identifier of the category
-   * @return foodId
+   * @return categoryId
   **/
-  @ApiModelProperty(example = "1", value = "The identifier of the category")
+  @ApiModelProperty(example = "1", required = true, value = "The identifier of the category")
+    @NotNull
   
-    public Integer getCategoryIdId() {
+    public Integer getCategoryId() {
     return categoryId;
   }
 
   public void setCategoryId(Integer categoryId) {
-    this.foodId = categoryId;
+    this.categoryId = categoryId;
   }
 
   public Food name(String name) {
@@ -215,14 +216,17 @@ public class Food   {
     Food food = (Food) o;
     return Objects.equals(this.foodId, food.foodId) &&
         Objects.equals(this.name, food.name) &&
+        Objects.equals(this.categoryId, food.categoryId) &&
         Objects.equals(this.description, food.description) &&
         Objects.equals(this.price, food.price) &&
+        Objects.equals(this.active, food.active) &&
+        Objects.equals(this.isDishOfDay, food.isDishOfDay) &&
         Objects.equals(this.imageURL, food.imageURL);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(foodId, name, description, price, imageURL);
+    return Objects.hash(foodId, categoryId, name, description, price, imageURL, active, isDishOfDay);
   }
 
   @Override
@@ -231,10 +235,13 @@ public class Food   {
     sb.append("class Food {\n");
     
     sb.append("    foodId: ").append(toIndentedString(foodId)).append("\n");
+    sb.append("    categoryId: ").append(toIndentedString(categoryId)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    price: ").append(toIndentedString(price)).append("\n");
     sb.append("    imageURL: ").append(toIndentedString(imageURL)).append("\n");
+    sb.append("    active: ").append(toIndentedString(active)).append("\n");
+    sb.append("    isDishOfDay: ").append(toIndentedString(isDishOfDay)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -42,6 +42,7 @@ public interface MenuApi {
     ResponseEntity<List<Food>> menuFoodGet(@ApiParam(value = "The name of the food to return.") @Valid @RequestParam(value = "name", required = false) String name
 ,@ApiParam(value = "The description of the food to return.") @Valid @RequestParam(value = "description", required = false) String description
 ,@ApiParam(value = "The ID of the category of the food to return.") @Valid @RequestParam(value = "categoryId", required = false) Integer categoryId
+,@ApiParam(value = "The access token given to the authenticated user.", required = false) @Valid @RequestParam(value = "access_token", required = false) String accessToken
 );
     
     @ApiOperation(value = "Returns all foods listed as dish of the day", nickname = "menuFoodDishOfDayGet", notes = "Endpoint where the featured food can be obtained.", response = Food.class, responseContainer = "List", tags={  })
