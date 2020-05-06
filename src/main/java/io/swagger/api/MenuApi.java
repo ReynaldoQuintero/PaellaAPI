@@ -276,7 +276,7 @@ public interface MenuApi {
 
     @ApiOperation(value = "Creates a category", nickname = "menuCategoriesPost", notes = "", response = Category.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 201, message = "Created", response = IngredientFood.class) })
+        @ApiResponse(code = 201, message = "Created", response = Category.class) })
     @RequestMapping(value = "/menu/categories",
         produces = { "application/json" }, 
         consumes = { "application/json" },

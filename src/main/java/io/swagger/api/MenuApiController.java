@@ -556,7 +556,9 @@ public class MenuApiController implements MenuApi {
     }
 
     @Override
-    public ResponseEntity<List<Category>> menuCategoriesGet(String name, String description) {
+    public ResponseEntity<List<Category>> menuCategoriesGet(@ApiParam(value = "The name of the category to return.") @Valid @RequestParam(value = "name", required = false) String name
+,@ApiParam(value = "The description of the category to return.") @Valid @RequestParam(value = "description", required = false) String description
+) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             Category category = new Category();
@@ -578,7 +580,9 @@ public class MenuApiController implements MenuApi {
     }
 
     @Override
-    public ResponseEntity<Void> menuCategoriesIdDelete(Integer id, String accessToken) {
+    public ResponseEntity<Void> menuCategoriesIdDelete(@ApiParam(value = "The ID of the category to delete.",required=true) @PathVariable("id") Integer id
+,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
+) {
         Authentication authentication = SecurityContextHolder.getContext()
         .getAuthentication();
         boolean flag = false;
@@ -606,7 +610,8 @@ public class MenuApiController implements MenuApi {
     }
 
     @Override
-    public ResponseEntity<Category> menuCategoriesIdGet(Integer id) {
+    public ResponseEntity<Category> menuCategoriesIdGet(@ApiParam(value = "The ID of the category to return.",required=true) @PathVariable("id") Integer id
+) {
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             Category category = this.categoryRepo.findOne(id);
@@ -623,7 +628,10 @@ public class MenuApiController implements MenuApi {
     }
 
     @Override
-    public ResponseEntity<Category> menuCategoriesIdPut(Category body, String accessToken, Integer id) {
+    public ResponseEntity<Category> menuCategoriesIdPut(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Category body
+,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
+,@ApiParam(value = "The ID of the category to update.",required=true) @PathVariable("id") Integer id
+) {
         Authentication authentication = SecurityContextHolder.getContext()
         .getAuthentication();
         boolean flag = false;
@@ -656,7 +664,9 @@ public class MenuApiController implements MenuApi {
     }
 
     @Override
-    public ResponseEntity<Category> menuCategoriesPost(Category body, String accessToken) {
+    public ResponseEntity<Category> menuCategoriesPost(@ApiParam(value = "" ,required=true )  @Valid @RequestBody Category body
+,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
+) {
         Authentication authentication = SecurityContextHolder.getContext()
         .getAuthentication();
         boolean flag = false;
