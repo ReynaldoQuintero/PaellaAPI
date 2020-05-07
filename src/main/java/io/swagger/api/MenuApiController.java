@@ -400,6 +400,7 @@ public class MenuApiController implements MenuApi {
     
       public ResponseEntity<List<IngredientFood>> menuIngredientFoodsGet(@ApiParam(value = "The name of the ingredient to return.") @Valid @RequestParam(value = "nameIngredient", required = false) String nameIngredient
 ,@ApiParam(value = "The description of the ingredient to return.") @Valid @RequestParam(value = "descriptionIngredient", required = false) String descriptionIngredient
+,@ApiParam(value = "The id of the food to return.") @Valid @RequestParam(value = "foodId", required = false) Integer foodId
 ,@ApiParam(value = "The name of the food to return.") @Valid @RequestParam(value = "nameFood", required = false) String nameFood
 ,@ApiParam(value = "The description of the food to return.") @Valid @RequestParam(value = "descriptionFood", required = false) String descriptionFood
 ) {
@@ -416,7 +417,7 @@ public class MenuApiController implements MenuApi {
                 ingredients = ingredientRepo.findByDescription(descriptionIngredient);
             }
             
-            if(nameFood != null || descriptionFood != null){
+            if(nameFood != null || descriptionFood != null || foodId != null){
                 Food food = new Food();
                 
                 if(nameFood != null){
@@ -425,6 +426,10 @@ public class MenuApiController implements MenuApi {
                 
                 if(descriptionFood != null){
                     food.setDescription(descriptionFood);
+                }
+                
+                if(foodId != null){
+                    food.setFoodId(foodId);
                 }
 
                 foods = foodRepo.findAll(Example.of(food));

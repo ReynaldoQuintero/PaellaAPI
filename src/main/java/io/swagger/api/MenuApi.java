@@ -180,6 +180,7 @@ public interface MenuApi {
         method = RequestMethod.GET)
     ResponseEntity<List<IngredientFood>> menuIngredientFoodsGet(@ApiParam(value = "The name of the ingredient to return.") @Valid @RequestParam(value = "nameIngredient", required = false) String nameIngredient
 ,@ApiParam(value = "The description of the ingredient to return.") @Valid @RequestParam(value = "descriptionIngredient", required = false) String descriptionIngredient
+,@ApiParam(value = "The id of the food to return.") @Valid @RequestParam(value = "foodId", required = false) Integer foodId
 ,@ApiParam(value = "The name of the food to return.") @Valid @RequestParam(value = "nameFood", required = false) String nameFood
 ,@ApiParam(value = "The description of the food to return.") @Valid @RequestParam(value = "descriptionFood", required = false) String descriptionFood
 );

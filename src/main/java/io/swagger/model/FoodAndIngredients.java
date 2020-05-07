@@ -59,7 +59,7 @@ public class FoodAndIngredients {
     @ApiModelProperty(required = true, value = "An array of the ingredient foods for this food.")
           @NotNull
         @Valid
-    @Size(min=1) public List<IngredientFood> getIngredientFoods() {
+    @Size(min=0) public List<IngredientFood> getIngredientFoods() {
         return ingredientFoods;
     }
 
