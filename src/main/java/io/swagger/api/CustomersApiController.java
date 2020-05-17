@@ -52,21 +52,135 @@ public class CustomersApiController implements CustomersApi {
 ,@ApiParam(value = "The lastname of the customers to return.") @Valid @RequestParam(value = "lastname", required = false) String lastname
 ,@ApiParam(value = "The email of the customers to return.") @Valid @RequestParam(value = "email", required = false) String email
 ) {
-        Authentication authentication = SecurityContextHolder.getContext()
-        .getAuthentication();
-        boolean flag = false;
-        for(GrantedAuthority authority : authentication.getAuthorities()){
-            if("ADMIN".equals(authority.getAuthority())){
-                flag = true;
-                break;
-            }
-        }
-        if(!flag){
-            return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
-        }
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
-            return new ResponseEntity<List<User>>(userRepo.findByPrivilege(User.PrivilegeEnum.BASIC), HttpStatus.OK);
+            if(firstname != null && lastname != null && email != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndFirstnameAndLastnameAndEmail(User.PrivilegeEnum.BASIC, firstname, lastname, email), HttpStatus.OK);
+            } else if(firstname != null && lastname != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndFirstnameAndLastname(User.PrivilegeEnum.BASIC, firstname, lastname), HttpStatus.OK);
+            } else if (firstname != null && email != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndFirstnameAndEmail(User.PrivilegeEnum.BASIC, firstname, email), HttpStatus.OK);
+            } else if (email != null && lastname != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndLastnameAndEmail(User.PrivilegeEnum.BASIC, lastname, email), HttpStatus.OK);
+            } else if (email != null){
+                List<User> users = this.userRepo.findByPrivilegeAndEmail(User.PrivilegeEnum.BASIC, email);
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(users.size() == 1){
+                    User user = users.get(0);
+                    if(user.getEmail().equals(authentication.getName())){
+                        flag = true;
+                    }
+                }
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+            } else if (firstname != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndFirstname(User.PrivilegeEnum.BASIC, firstname), HttpStatus.OK);
+            } else if (lastname != null){
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilegeAndLastname(User.PrivilegeEnum.BASIC, lastname), HttpStatus.OK);
+            } else {
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(!flag){
+                    return new ResponseEntity<List<User>>(HttpStatus.UNAUTHORIZED);
+                }
+                return new ResponseEntity<List<User>>(this.userRepo.findByPrivilege(User.PrivilegeEnum.BASIC), HttpStatus.OK);
+            }
         }
 
         return new ResponseEntity<List<User>>(HttpStatus.NOT_IMPLEMENTED);
@@ -120,6 +234,7 @@ public class CustomersApiController implements CustomersApi {
                 break;
             }
         }
+
         if(user.getEmail().equals(authentication.getName())){
             flag = true;
         }
@@ -129,7 +244,7 @@ public class CustomersApiController implements CustomersApi {
         }
         
         if (accept != null && accept.contains("application/json")) {
-            return new ResponseEntity<User>(user, HttpStatus.NOT_IMPLEMENTED);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
         }
 
         return new ResponseEntity<User>(HttpStatus.NOT_IMPLEMENTED);

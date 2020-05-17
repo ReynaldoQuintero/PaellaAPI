@@ -44,9 +44,9 @@ public class Order   {
    * The status of the order
    */
   public enum StatusEnum {
-    DELIVERED("Delivered"),
-    UNDELIVERED("Undelivered"),
-    INCART("In_cart");
+    DELIVERED("DELIVERED"),
+    UNDELIVERED("UNDELIVERED"),
+    INCART("INCART");
     
 
     private String value;
@@ -131,7 +131,7 @@ public class Order   {
    * The status of the order
    * @return status
   **/
-  @ApiModelProperty(example = "In_cart", required = true, value = "The status of the order")
+  @ApiModelProperty(example = "INCART", required = true, value = "The status of the order")
       @NotNull
 
     public StatusEnum getStatus() {

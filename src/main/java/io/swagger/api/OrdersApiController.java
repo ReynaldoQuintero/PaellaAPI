@@ -101,210 +101,64 @@ public class OrdersApiController implements OrdersApi {
                 }
             }
             
-            if(userIds.size() > 0){
-                Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-                boolean flag = true;
-                User currentUser = this.userRepo.findByEmail(authentication.getName());
-                if(currentUser == null){
-                    System.out.println("No user found with email: "+authentication.getName());
-                    return new ResponseEntity<List<Order>>(HttpStatus.UNAUTHORIZED);
-                }
-                for(Integer i : userIds){
-                    if(i != currentUser.getId()){
-                        flag = false;
-                        break;
-                    }
-                }
-                for(GrantedAuthority authority : authentication.getAuthorities()){
-                    if("ADMIN".equals(authority.getAuthority())){
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag){
-                    return new ResponseEntity<List<Order>>(HttpStatus.UNAUTHORIZED);
-                }
-            } else {
-                Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-                boolean flag = true;
-                for(GrantedAuthority authority : authentication.getAuthorities()){
-                    if("ADMIN".equals(authority.getAuthority())){
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag){
-                    return new ResponseEntity<List<Order>>(HttpStatus.UNAUTHORIZED);
+            Authentication authentication = SecurityContextHolder.getContext()
+            .getAuthentication();
+            boolean flag = false;
+            for(GrantedAuthority authority : authentication.getAuthorities()){
+                if("ADMIN".equals(authority.getAuthority())){
+                    flag = true;
+                    break;
                 }
             }
-            
+
+            List<Order> orders = null;
+
             if(orderIds.size() > 0 && status != null && userIds.size() > 0){
-                List<Order> orders = this.orderRepo.findByIdInAndUserIDInAndStatus(orderIds, userIds, StatusEnum.valueOf(status));
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByIdInAndUserIDInAndStatus(orderIds, userIds, StatusEnum.valueOf(status));
             } else if (orderIds.size() > 0 && userIds.size() > 0){
-                List<Order> orders = this.orderRepo.findByIdInAndUserIDIn(orderIds, userIds);
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByIdInAndUserIDIn(orderIds, userIds);
             } else if (orderIds.size() > 0 && status != null){
-                List<Order> orders = this.orderRepo.findByIdInAndStatus(orderIds, StatusEnum.valueOf(status));
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByIdInAndStatus(orderIds, StatusEnum.valueOf(status));
             } else if (userIds.size() > 0 && status != null){
-                List<Order> orders = this.orderRepo.findByUserIDInAndStatus(userIds, StatusEnum.valueOf(status));
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByUserIDInAndStatus(userIds, StatusEnum.valueOf(status));
             } else if (orderIds.size() > 0){
-                List<Order> orders = this.orderRepo.findByIdIn(orderIds);
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByIdIn(orderIds);
             } else if (userIds.size() > 0){
-                List<Order> orders = this.orderRepo.findByUserIDIn(userIds);
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByUserIDIn(userIds);
             } else if (status != null){
-                List<Order> orders = this.orderRepo.findByStatus(StatusEnum.valueOf(status));
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findByStatus(StatusEnum.valueOf(status));
             } else {
-                Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
-                boolean flag = false;
-                for(GrantedAuthority authority : authentication.getAuthorities()){
-                    if("ADMIN".equals(authority.getAuthority())){
-                        flag = true;
-                        break;
-                    }
-                }
-                if(!flag){
-                    return new ResponseEntity<List<Order>>(HttpStatus.UNAUTHORIZED);
-                }
-                List<Order> orders = this.orderRepo.findAll();
-                for(Order ord : orders){
-                    if(ord.getStatus().equals(StatusEnum.INCART)){
-                        List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
-                        BigDecimal total = BigDecimal.ZERO;
-                        for (int i = 0; i < fo.size(); i++) {
-                            Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
-                            BigDecimal subtotal = BigDecimal.ZERO;
-                            subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
-                            fo.get(i).setSubTotal(subtotal);
-                            this.foodOrderRepo.save(fo.get(i));
-                            total = total.add(fo.get(i).getSubTotal());
-                        }
-                        ord.setTotal(total);
-                        this.orderRepo.save(ord);
-                    }
-                }
-                return new ResponseEntity<List<Order>>(orders, HttpStatus.OK);
+                orders = this.orderRepo.findAll();
             }
+
+            User auth = this.userRepo.findByEmail(authentication.getName());
+
+            List<Order> finalOrders = new ArrayList();
+
+            for(Order ord : orders){
+                if(!ord.getUserID().equals(auth.getId()) && !flag){
+                    continue;
+                } else {
+                    finalOrders.add(ord);
+                }
+                if(ord.getStatus().equals(StatusEnum.INCART)){
+                    List<FoodOrder> fo = this.foodOrderRepo.findByOrderId(ord.getId());
+                    BigDecimal total = BigDecimal.ZERO;
+                    for (int i = 0; i < fo.size(); i++) {
+                        Food food = this.foodRepo.getOne(fo.get(i).getFoodId());
+                        BigDecimal subtotal = BigDecimal.ZERO;
+                        subtotal = subtotal.add(food.getPrice().multiply(new BigDecimal(fo.get(i).getQuantity())));
+                        fo.get(i).setSubTotal(subtotal);
+                        this.foodOrderRepo.save(fo.get(i));
+                        total = total.add(fo.get(i).getSubTotal());
+                    }
+                    ord.setTotal(total);
+                    this.orderRepo.save(ord);
+                }
+            }    
+            
+            return new ResponseEntity<List<Order>>(finalOrders, HttpStatus.OK);
+            
         }
 
         return new ResponseEntity<List<Order>>(HttpStatus.NOT_IMPLEMENTED);
@@ -473,6 +327,61 @@ public class OrdersApiController implements OrdersApi {
         return new ResponseEntity<Order>(HttpStatus.NOT_IMPLEMENTED);
     }
     
+    public ResponseEntity<List<FoodOrder>> foodOrdersGet(@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
+,@ApiParam(value = "The id of the order whose foodorders will be returned.") @Valid @RequestParam(value = "orderId", required = false) Integer orderId
+){
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/json")) {
+            
+            if(orderId != null){
+                
+                Order order = this.orderRepo.findOne(orderId);
+                
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                User currentUser = this.userRepo.findByEmail(authentication.getName());
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(order.getUserID() == currentUser.getId()){
+                    flag = true;
+                }
+                if(!flag){
+                    return new ResponseEntity<List<FoodOrder>>(HttpStatus.UNAUTHORIZED);
+                }
+                
+                
+                return new ResponseEntity<List<FoodOrder>>(this.foodOrderRepo.findByOrderId(orderId), HttpStatus.OK);
+                
+            } else {
+                Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+                boolean flag = false;
+                for(GrantedAuthority authority : authentication.getAuthorities()){
+                    if("ADMIN".equals(authority.getAuthority())){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(!flag){
+                    return new ResponseEntity<List<FoodOrder>>(HttpStatus.UNAUTHORIZED);
+                }
+                
+                return new ResponseEntity<List<FoodOrder>>(this.foodOrderRepo.findAll(), HttpStatus.OK);
+            }
+            
+            
+            
+            
+        }
+
+        return new ResponseEntity<List<FoodOrder>>(HttpStatus.NOT_IMPLEMENTED);
+    }
+    
     public ResponseEntity<FoodOrder> foodOrdersIdGet(@ApiParam(value = "The ID of the FoodOrder to return.",required=true) @PathVariable("id") Integer id
 ) {
         String accept = request.getHeader("Accept");
@@ -502,7 +411,6 @@ public class OrdersApiController implements OrdersApi {
     public ResponseEntity<FoodOrder> foodOrdersPost(@ApiParam(value = "" ,required=true )  @Valid @RequestBody FoodOrder body
 ,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = false) @Valid @RequestParam(value = "access_token", required = false) String accessToken
 ) {
-        System.out.println("HOLAAAAAAAAAA");
         String accept = request.getHeader("Accept");
         if (accept != null && accept.contains("application/json")) {
             

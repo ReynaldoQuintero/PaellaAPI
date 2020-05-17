@@ -93,6 +93,16 @@ public interface OrdersApi {
 ,@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
 );
     
+    @ApiOperation(value = "Returns all food orders.", nickname = "foodOrdersGet", notes = "Endpoint where all food orders can be obtained.", response = FoodOrder.class, responseContainer = "List", tags={  })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "A list of JSON representations of the food Orders", response = FoodOrder.class, responseContainer = "List") })
+    @RequestMapping(value = "/foodOrders",
+        produces = { "application/json" }, 
+        method = RequestMethod.GET)
+    ResponseEntity<List<FoodOrder>> foodOrdersGet(@NotNull @ApiParam(value = "The access token given to the authenticated user.", required = true) @Valid @RequestParam(value = "access_token", required = true) String accessToken
+,@ApiParam(value = "The id of the order whose foodorders will be returned.") @Valid @RequestParam(value = "orderId", required = false) Integer orderId
+);
+    
     @ApiOperation(value = "Returns a link between an order and a food by ID.", nickname = "ordersIdGet", notes = "Endpoint where a link between an order and a food can be obtained by specifying its ID.", response = FoodOrder.class, tags={  })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "A JSON representation of the link", response = FoodOrder.class),
